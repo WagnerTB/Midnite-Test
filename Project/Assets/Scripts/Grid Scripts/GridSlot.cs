@@ -23,7 +23,6 @@ public class GridSlot : MonoBehaviour
         if (!gridObjects.Contains(gridObject))
         {
             gridObjects.Add(gridObject);
-            gridObject.SetGridSlot(this);
         }
     }
 
@@ -31,7 +30,7 @@ public class GridSlot : MonoBehaviour
     {
         if (gridObjects.Contains(gridObject))
         {
-
+            gridObjects.Remove(gridObject);
             OnSlotChanged(false, gridObject);
         }
     }

@@ -5,12 +5,12 @@ using UnityEngine;
 
 public class Grid
 {
-    public List<GridSlot> GridSlots { get { return gridSlots; } }
+    public Dictionary<Vector2Int, GridSlot> GridSlots { get { return gridSlots; } }
 
     private Vector2Int gridSize;
     private float cellSize;
     private Vector3 offset;
-    private List<GridSlot> gridSlots = new List<GridSlot>();
+    private Dictionary<Vector2Int,GridSlot> gridSlots = new Dictionary<Vector2Int,GridSlot>();
     private GridSlot gridSlotPrefab;
 
     public Grid(Vector2Int gridSize,float cellSize,Vector3 offset,GridSlot gridSlotPrefab)
@@ -33,9 +33,14 @@ public class Grid
             {
                 Vector3 pos = new Vector3((x * cellSize) + offset.x, offset.y, (y*cellSize) + offset.z);
                 var slot = GameObject.Instantiate(gridSlotPrefab, pos, Quaternion.identity);
-                slot.Initialize(new Vector2Int(x,y));
-                gridSlots.Add(slot);
+                var index = new Vector2Int(x, y);
+                slot.Initialize(index);
+
+                if(!gridSlots.ContainsKey(index))
+                    gridSlots.Add(index,slot);
+
                 slot.transform.SetParent(GridSystem.Instance.slotParents);
+                slot.name = "Slot [" + index + "]";
                 // debug
                 
                 if(UnityEngine.Random.Range(0,10) >= 9)
@@ -44,7 +49,8 @@ public class Grid
                     var gridObj = GameObject.Instantiate(GridSystem.Instance.gridObjectPrefab);
                     gridObj.transform.position = pos;
                     slot.AddToSlot(gridObj);
-                    
+
+                    gridObj.SetGridSlot(slot);
                     gridObj.SetObjectData(obj);
                     gridObj.transform.SetParent(GridSystem.Instance.objectsParents);
 

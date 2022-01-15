@@ -41,4 +41,28 @@ public class GridSystem : MonoBehaviour
         grid = new Grid(gridSize, cellSize, offset, gridSlotPrefab);
     }
 
+    public GridSlot GetGridSlot(Vector2Int index)
+    {
+        if ((index.x >= 0 && index.x < gridSize.x) &&
+            (index.y >= 0 && index.y < gridSize.y))
+        {
+            //Debug.Log("Returned Grid index (" + index + ")");
+            return grid.GridSlots[index];
+        }
+        else
+        {
+            //Debug.LogError("Out of grid bounds!! (" + index + ")");
+            return null;
+        }
+
+    }
+
+    public Vector3 GetGridSlotWorldPosition(GridSlot gridSlot)
+    {
+        if (gridSlot == null)
+            return Vector3.zero;
+
+        Vector3 pos = new Vector3((gridSlot.index.x * cellSize)+ offset.x, .1f, (gridSlot.index.y * cellSize)+ offset.z);
+        return pos;
+    }
 }
