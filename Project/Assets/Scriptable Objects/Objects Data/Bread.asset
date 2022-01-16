@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Bread
   m_EditorClassIdentifier: 
   objectName: Bread
-  gameVisualPrefab: {fileID: 5975155469534466880, guid: 6a9e144508e93c848ab9c41af980762a, type: 3}
+  visualPrefab: {fileID: 5764962964242528906, guid: ca212ba2ffea07746aab6bf4ff657587, type: 3}

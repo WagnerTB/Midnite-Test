@@ -62,7 +62,7 @@ public class GridSystem : MonoBehaviour
         if (gridSlot == null)
             return Vector3.zero;
 
-        Vector3 pos = new Vector3((gridSlot.index.x * cellSize)+ offset.x, .1f, (gridSlot.index.y * cellSize)+ offset.z);
+        Vector3 pos = new Vector3((gridSlot.index.x * cellSize)+ offset.x, .2f, (gridSlot.index.y * cellSize)+ offset.z);
         return pos;
     }
 }

@@ -18,18 +18,26 @@ public class InputController : MonoBehaviour
     private GridObject selectedObject;
     private Camera cam;
 
-
     public Directions currentDirection;
+
+    private bool lockInputs = false;
 
     private void Awake()
     {
         cam = FindObjectOfType<Camera>();
+
+        GameManager.OnGameStateChanged += GameStateChanged;
+    }
+
+    private void GameStateChanged(GameState gameState)
+    {
+        lockInputs = gameState != GameState.Play;
     }
 
     // Update is called once per frame
     void Update()
     {
-
+        if (lockInputs) return;
 #if UNITY_ANDROID
         if (Input.touchCount > 0)
         {
@@ -89,27 +97,26 @@ public class InputController : MonoBehaviour
         {
             if (difX > minDist)
             {
-                Debug.Log("Move left");
                 currentDirection = Directions.Left;
             }
             else if (difX < -minDist)
             {
-                Debug.Log("Move Right");
                 currentDirection = Directions.Right;
             }
             else if (difY > minDist)
             {
-                Debug.Log("Move down");
                 currentDirection = Directions.Down;
             }
             else if (difY < -minDist)
             {
-                Debug.Log("Move up");
                 currentDirection = Directions.Up;
             }
 
             if(currentDirection != Directions.None)
-            selectedObject.MoveToDirection(currentDirection);
+            {
+                GameManager.Instance.ChangeGameState(GameState.Animating);
+                selectedObject.MoveToDirection(currentDirection);
+            }
         }
 
     }
@@ -118,5 +125,6 @@ public class InputController : MonoBehaviour
     {
         initialPosition = Vector2.zero;
         currentDirection = Directions.None;
+
     }
 }

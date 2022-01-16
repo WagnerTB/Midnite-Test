@@ -43,19 +43,20 @@ public class Grid
                 slot.name = "Slot [" + index + "]";
                 // debug
                 
-                if(UnityEngine.Random.Range(0,10) >= 9)
+                if(UnityEngine.Random.Range(0,10) >= 5)
                 {
                     var obj = GameManager.Instance.db.objects[debugIndex];
                     var gridObj = GameObject.Instantiate(GridSystem.Instance.gridObjectPrefab);
                     gridObj.transform.position = pos;
                     slot.AddToSlot(gridObj);
 
-                    gridObj.SetGridSlot(slot);
-                    gridObj.SetObjectData(obj);
+                    var objLoader = new GameObject("loader").AddComponent<ObjectDataLoader>();
+                    objLoader.SetObjectData(obj);
+                    gridObj.AddNewObjLoader(objLoader);
                     gridObj.transform.SetParent(GridSystem.Instance.objectsParents);
 
                     debugIndex++;
-                    if (debugIndex > GameManager.Instance.db.objects.Count - 1) ;
+                    if (debugIndex > GameManager.Instance.db.objects.Count - 1)
                     {
                         debugIndex = 0;
                     }

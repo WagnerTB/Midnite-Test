@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Cheese
   m_EditorClassIdentifier: 
   objectName: Cheese
-  gameVisualPrefab: {fileID: 6990875689703063058, guid: bd7cdf9d6dd55d340b7c7619e3725290, type: 3}
+  visualPrefab: {fileID: 2771137979078801217, guid: 5169a092c92b9d345981395a4e02e422, type: 3}

@@ -5,7 +5,7 @@ using UnityEngine;
 public class GridSlot : MonoBehaviour
 {
     public Vector2Int index;
-    public List<GridObject> gridObjects;
+    public GridObject gridObject;
 
     /// <summary>
     /// true if some object enters in the slot
@@ -20,18 +20,12 @@ public class GridSlot : MonoBehaviour
 
     public void AddToSlot(GridObject gridObject)
     {
-        if (!gridObjects.Contains(gridObject))
-        {
-            gridObjects.Add(gridObject);
-        }
+        this.gridObject = gridObject;
+        gridObject.gridSlot = this;
     }
 
     public void RemoveFromSlot(GridObject gridObject)
     {
-        if (gridObjects.Contains(gridObject))
-        {
-            gridObjects.Remove(gridObject);
-            OnSlotChanged(false, gridObject);
-        }
+        this.gridObject = null;   
     }
 }

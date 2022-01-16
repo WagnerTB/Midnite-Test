@@ -6,5 +6,5 @@ using UnityEngine;
 public class ObjectData : ScriptableObject
 {
     public string objectName;
-    public GameVisual gameVisualPrefab;
+    public GameObject visualPrefab;
 }

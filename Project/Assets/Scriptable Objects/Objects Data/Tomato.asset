@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: Tomato
   m_EditorClassIdentifier: 
   objectName: Tomato
-  gameVisualPrefab: {fileID: -4243153029515292507, guid: b7c06de27876f5c47a9db0575f9391bc, type: 3}
+  visualPrefab: {fileID: 2349296836677394995, guid: 6528793be95d08344afab74352046e4b, type: 3}
