@@ -2,10 +2,22 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
+
+[System.Serializable]
+
+public struct GridObjInfo
+{
+    public Vector2Int index;
+    public int objectIndex;
+}
+
+
 public class GridObject : MonoBehaviour
 {
     public GridSlot gridSlot;
+    [SerializeField]
     private List<ObjectDataLoader> objectDataLoaders = new List<ObjectDataLoader>();
+    public List<ObjectDataLoader> ObjectDataLoaders { get { return objectDataLoaders; } }
     public BoxCollider boxCollider;
 
     private void Awake()
@@ -15,17 +27,16 @@ public class GridObject : MonoBehaviour
 
     public void AddNewObjLoader(ObjectDataLoader objectDataLoader)
     {
-        objectDataLoader.transform.SetParent(this.transform);
+        objectDataLoader.SetGridObject(this);
         objectDataLoader.transform.position = this.transform.position;
         objectDataLoaders.Add(objectDataLoader);
     }
 
     public void AddNewGameVisual(List<ObjectDataLoader> objectDataLoaders)
     {
-        for (int i = 0; i < objectDataLoaders.Count; i++)
+        for (int i = objectDataLoaders.Count-1; i >= 0 ; i--)
         {
             var target = objectDataLoaders[i];
-            //target.transform.SetParent(this.transform);
             this.objectDataLoaders.Add(target);
         }
     }
@@ -35,7 +46,7 @@ public class GridObject : MonoBehaviour
         for (int i = 0; i < objectDataLoaders.Count; i++)
         {
             var target = objectDataLoaders[i];
-            target.transform.SetParent(this.transform);
+            target.SetGridObject(this);
         }
     }
 
@@ -90,6 +101,7 @@ public class GridObject : MonoBehaviour
 
             targetGridObject.SetParent(objectDataLoaders);
             GameManager.Instance.ChangeGameState(GameState.Play);
+            GameManager.Instance.CheckWin(targetGridObject);
             Destroy(this.gameObject, .2f);
         }
         else if (this.gridSlot == null)

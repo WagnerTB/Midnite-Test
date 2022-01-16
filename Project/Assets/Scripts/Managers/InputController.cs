@@ -44,7 +44,8 @@ public class InputController : MonoBehaviour
             if (initialPosition == Vector2.zero)
                 BeginClick(Input.GetTouch(0).position);
 
-            HoldingClick(Input.GetTouch(0).position);
+            if (selectedObject != null)
+                HoldingClick(Input.GetTouch(0).position);
 
         }
         else
@@ -58,7 +59,8 @@ public class InputController : MonoBehaviour
             if (initialPosition == Vector2.zero)
                 BeginClick(Input.mousePosition);
 
-            HoldingClick(Input.mousePosition);
+            if (selectedObject != null)
+                HoldingClick(Input.mousePosition);
 
         }
         else
@@ -112,7 +114,7 @@ public class InputController : MonoBehaviour
                 currentDirection = Directions.Up;
             }
 
-            if(currentDirection != Directions.None)
+            if (currentDirection != Directions.None)
             {
                 GameManager.Instance.ChangeGameState(GameState.Animating);
                 selectedObject.MoveToDirection(currentDirection);

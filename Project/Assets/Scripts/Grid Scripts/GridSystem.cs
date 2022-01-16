@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class GridSystem : MonoBehaviour
@@ -12,7 +13,7 @@ public class GridSystem : MonoBehaviour
     public Vector2Int gridSize;
     public float cellSize;
     public Vector3 offset;
-    public Grid grid;
+    public CustomGrid grid;
     public GridSlot gridSlotPrefab;
     public GridObject gridObjectPrefab;
     public Transform slotParents;
@@ -38,7 +39,48 @@ public class GridSystem : MonoBehaviour
 
     private void GenerateGrid()
     {
-        grid = new Grid(gridSize, cellSize, offset, gridSlotPrefab);
+        grid = new CustomGrid(gridSize, cellSize, offset, gridSlotPrefab);
+
+        GameManager.Instance.CreateIngredients(0, new Vector2Int(1, 1));
+        GameManager.Instance.CreateIngredients(0, new Vector2Int(2, 1));
+        GameManager.Instance.CreateIngredients(1, new Vector2Int(1, 2));
+        GameManager.Instance.CreateIngredients(2, new Vector2Int(2, 2));
+        GameManager.Instance.CreateIngredients(2, new Vector2Int(1, 0));
+        GameManager.Instance.CreateIngredients(1, new Vector2Int(2, 0));
+        SaveLoadSystem.SaveLevel();
+    }
+
+    public void DestroyGrid()
+    {
+        if(grid != null)
+        {
+            foreach (var slot in grid.GridSlots)
+            {
+                if(slot.Value.gridObject != null)
+                {
+                    Destroy(slot.Value.gridObject.gameObject);
+                }
+            }
+
+            var slotList = grid.GridSlots.ToList();
+
+            for (int i = slotList.Count-1; i >= 0; i--)
+            {
+                var target = slotList[i].Value;
+                if(target != null)
+                {
+                    Destroy(target.gameObject);
+                }
+            }
+
+            
+        }
+    }
+
+    public void GenerateGrid(Vector2Int gridSize, float cellSize, Vector3 offset)
+    {
+        grid = new CustomGrid(gridSize, cellSize, offset, gridSlotPrefab);
+
     }
 
     public GridSlot GetGridSlot(Vector2Int index)

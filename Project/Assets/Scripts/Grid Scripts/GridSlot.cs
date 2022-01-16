@@ -7,11 +7,6 @@ public class GridSlot : MonoBehaviour
     public Vector2Int index;
     public GridObject gridObject;
 
-    /// <summary>
-    /// true if some object enters in the slot
-    /// Grid Object that enters or leave the slot
-    /// </summary>
-    public System.Action<bool, GridObject> OnSlotChanged;
 
     public void Initialize(Vector2Int index)
     {

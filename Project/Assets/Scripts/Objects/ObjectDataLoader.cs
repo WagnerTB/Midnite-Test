@@ -6,6 +6,8 @@ public class ObjectDataLoader : MonoBehaviour
 {
     public ObjectData objectData;
     private GameObject visual;
+    public GridObject gridObject;
+
     public void SetObjectData(ObjectData objectData)
     {
         if(visual != null)
@@ -16,5 +18,11 @@ public class ObjectDataLoader : MonoBehaviour
         visual = Instantiate(objectData.visualPrefab, this.transform.position + new Vector3(0, .1f, 0), Quaternion.identity);
         visual.transform.SetParent(this.transform);
         this.name = objectData.name;
+    }
+
+    public void SetGridObject(GridObject gridObject)
+    {
+        transform.SetParent(gridObject.transform);
+        this.gridObject = gridObject;
     }
 }
