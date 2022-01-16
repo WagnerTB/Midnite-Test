@@ -114,12 +114,13 @@ public class GridObject : MonoBehaviour
     {
         var targetPos = GridSystem.Instance.GetGridSlotWorldPosition(targetGridSlot);
         var rot = transform.localEulerAngles;
+        float height = .3f;
 
         if (direction == Directions.Left || direction == Directions.Right)
         {
             transform.DOMoveX(targetPos.x, duration);
             transform.DOMoveY(2, duration / 2);
-            transform.DOMoveY(targetPos.y + (targetGridSlot.gridObject.objectDataLoaders.Count * .2f) + .2f, duration / 2).SetDelay(duration / 2);
+            transform.DOMoveY(targetPos.y + (targetGridSlot.gridObject.objectDataLoaders.Count * height) + height, duration / 2).SetDelay(duration / 2);
             if (direction == Directions.Left)
             {
                 transform.DOLocalRotate(rot + new Vector3(0, 0, 180), duration, RotateMode.Fast).SetEase(Ease.OutQuad);
@@ -133,7 +134,7 @@ public class GridObject : MonoBehaviour
         {
             transform.DOMoveZ(targetPos.z, duration);
             transform.DOMoveY(2, duration / 2);
-            transform.DOMoveY(targetPos.y+(targetGridSlot.gridObject.objectDataLoaders.Count * .2f)+.2f, duration / 2).SetDelay(duration / 2);
+            transform.DOMoveY(targetPos.y+(targetGridSlot.gridObject.objectDataLoaders.Count * height) + height, duration / 2).SetDelay(duration / 2);
 
             if (direction == Directions.Up)
             {

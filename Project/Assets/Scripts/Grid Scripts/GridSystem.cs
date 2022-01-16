@@ -40,40 +40,35 @@ public class GridSystem : MonoBehaviour
     private void GenerateGrid()
     {
         grid = new CustomGrid(gridSize, cellSize, offset, gridSlotPrefab);
-
-        GameManager.Instance.CreateIngredients(0, new Vector2Int(1, 1));
-        GameManager.Instance.CreateIngredients(0, new Vector2Int(2, 1));
-        GameManager.Instance.CreateIngredients(1, new Vector2Int(1, 2));
-        GameManager.Instance.CreateIngredients(2, new Vector2Int(2, 2));
-        GameManager.Instance.CreateIngredients(2, new Vector2Int(1, 0));
-        GameManager.Instance.CreateIngredients(1, new Vector2Int(2, 0));
-        SaveLoadSystem.SaveLevel();
     }
 
-    public void DestroyGrid()
+    public void DestroyGrid(bool destroyGrid = false)
     {
-        if(grid != null)
+        if (grid != null)
         {
             foreach (var slot in grid.GridSlots)
             {
-                if(slot.Value.gridObject != null)
+                if (slot.Value.gridObject != null)
                 {
-                    Destroy(slot.Value.gridObject.gameObject);
-                }
-            }
-
-            var slotList = grid.GridSlots.ToList();
-
-            for (int i = slotList.Count-1; i >= 0; i--)
-            {
-                var target = slotList[i].Value;
-                if(target != null)
-                {
+                    var target = slot.Value.gridObject;
+                    slot.Value.RemoveFromSlot(target);
                     Destroy(target.gameObject);
                 }
             }
 
-            
+            if (destroyGrid)
+            {
+                var slotList = grid.GridSlots.ToList();
+
+                for (int i = slotList.Count - 1; i >= 0; i--)
+                {
+                    var target = slotList[i].Value;
+                    if (target != null)
+                    {
+                        Destroy(target.gameObject);
+                    }
+                }
+            }
         }
     }
 
@@ -104,7 +99,33 @@ public class GridSystem : MonoBehaviour
         if (gridSlot == null)
             return Vector3.zero;
 
-        Vector3 pos = new Vector3((gridSlot.index.x * cellSize)+ offset.x, .2f, (gridSlot.index.y * cellSize)+ offset.z);
+        Vector3 pos = new Vector3((gridSlot.index.x * cellSize) + offset.x, .2f, (gridSlot.index.y * cellSize) + offset.z);
         return pos;
+    }
+
+
+
+    public List<GridSlot> GetSlotsAvailableAround(Vector2Int index)
+    {
+        List<GridSlot> slotsAvailable = new List<GridSlot>();
+
+        var rightSlot = GetGridSlot(new Vector2Int(index.x + 1, index.y));
+        var leftSlot = GetGridSlot(new Vector2Int(index.x - 1, index.y));
+        var upSlot = GetGridSlot(new Vector2Int(index.x, index.y + 1));
+        var downSlot = GetGridSlot(new Vector2Int(index.x, index.y - 1));
+
+        if (rightSlot != null && rightSlot.gridObject == null)
+            slotsAvailable.Add(rightSlot);
+
+        if (leftSlot != null && leftSlot.gridObject == null)
+            slotsAvailable.Add(leftSlot);
+
+        if (upSlot != null && upSlot.gridObject == null)
+            slotsAvailable.Add(upSlot);
+
+        if (downSlot != null && downSlot.gridObject == null)
+            slotsAvailable.Add(downSlot);
+
+        return slotsAvailable;
     }
 }

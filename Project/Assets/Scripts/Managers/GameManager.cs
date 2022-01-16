@@ -24,7 +24,10 @@ public class GameManager : MonoBehaviour
     public delegate void GameStateEvent(GameState gameState);
     public static GameStateEvent OnGameStateChanged;
 
+    public LevelController levelController;
+
     public List<ObjectDataLoader> ingredients = new List<ObjectDataLoader>();
+    public List<GridSlot> slotsWithObjectNearby = new List<GridSlot>();
 
     private void Awake()
     {
@@ -36,6 +39,30 @@ public class GameManager : MonoBehaviour
         {
             Destroy(this.gameObject);
         }
+
+        GridSlot.OnUpdateNearby += AddSlot;
+        GridSlot.OnSlotTurnInvalid += RemoveSlot;
+    }
+
+    private void RemoveSlot(GridSlot gridslot)
+    {
+        if (slotsWithObjectNearby.Contains(gridslot))
+        {
+            slotsWithObjectNearby.Remove(gridslot);
+        }
+    }
+
+    private void AddSlot(GridSlot gridslot)
+    {
+        if (!slotsWithObjectNearby.Contains(gridslot))
+        {
+            slotsWithObjectNearby.Add(gridslot);
+        }
+    }
+
+    private void Start()
+    {
+        levelController.GenerateNewLevel();
     }
 
     public void ChangeGameState(GameState gameState)
@@ -45,30 +72,17 @@ public class GameManager : MonoBehaviour
     }
     private void Update()
     {
-        if(Input.GetKeyDown(KeyCode.L))
+        if (Input.GetKeyDown(KeyCode.L))
         {
-            SaveLoadSystem.LoadLevel();
+            SaveLoadSystem.LoadLevel(SaveLoadSystem.defaultFileName);
         }
 
     }
-
-    public void CreateIngredients(int objIndex, Vector2Int index)
+    public void ResetGame()
     {
-        var obj = GameManager.Instance.db.objects[objIndex];
-        var gridObj = GameObject.Instantiate(GridSystem.Instance.gridObjectPrefab);
-        var slot = GridSystem.Instance.GetGridSlot(index);
 
-        gridObj.transform.position = GridSystem.Instance.GetGridSlotWorldPosition(slot);
-        slot.AddToSlot(gridObj);
-
-        var objLoader = new GameObject("loader").AddComponent<ObjectDataLoader>();
-        objLoader.SetObjectData(obj);
-        gridObj.AddNewObjLoader(objLoader);
-        gridObj.transform.SetParent(GridSystem.Instance.objectsParents);
-
-        if (obj.objectName != "Bread")
-            ingredients.Add(objLoader);
     }
+
 
     public void CheckWin(GridObject gridObject)
     {
@@ -99,8 +113,8 @@ public class GameManager : MonoBehaviour
                     }
                 }
 
-                if(win)
-                WinGame();
+                if (win)
+                    WinGame();
             }
 
         }

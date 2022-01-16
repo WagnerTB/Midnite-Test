@@ -6,4 +6,13 @@ using UnityEngine;
 public class ObjectsDatabase : ScriptableObject
 {
     public List<ObjectData> objects;
+
+    public int GetRandomObjectIndexAtRange(int min, int max)
+    {
+        if (max > objects.Count)
+            max = objects.Count;
+
+        var rnd = Random.Range(min, max);
+        return rnd;
+    }
 }

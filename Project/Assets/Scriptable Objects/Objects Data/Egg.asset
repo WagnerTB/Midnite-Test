@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 3b9f86a694f175a40882b1f7d742b22b, type: 3}
-  m_Name: Tomato 1
+  m_Name: Egg
   m_EditorClassIdentifier: 
-  objectName: Tomato
-  visualPrefab: {fileID: 2349296836677394995, guid: 6528793be95d08344afab74352046e4b, type: 3}
+  objectName: Egg
+  visualPrefab: {fileID: 8265732863098003717, guid: 243c2ffa735decd44b80debd30986985, type: 3}

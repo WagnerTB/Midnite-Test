@@ -5,21 +5,16 @@ using System.IO;
 using System.Linq;
 
 
-[System.Serializable]
-public struct Save
-{
-    public GridInfo gridInfo;
-    public List<GridObjInfo> gridObjects;
-}
+
 
 public static class SaveLoadSystem 
 {
     public static string folder = "/Save/";
-    public static string fileName = "layoutSave.json";
+    public static string defaultFileName = "layoutSave.json";
 
-    public static bool SaveLevel()
+    public static LevelData GetLevelData()
     {
-        Save save = new Save();
+        LevelData save = new LevelData();
         var gridInfo = new GridInfo();
         save.gridObjects = new List<GridObjInfo>();
 
@@ -31,7 +26,7 @@ public static class SaveLoadSystem
         var slots = __grid.GridSlots;
         foreach (var slot in slots)
         {
-            if(slot.Value.gridObject != null)
+            if (slot.Value.gridObject != null)
             {
                 var gridObjInfo = new GridObjInfo();
                 gridObjInfo.index = slot.Key;
@@ -40,9 +35,15 @@ public static class SaveLoadSystem
             }
         }
         save.gridInfo = gridInfo;
+        return save;
+    }
+
+    public static bool SaveLevel()
+    {
+        var save = GetLevelData();
 
         var json = JsonUtility.ToJson(save);
-        System.IO.File.WriteAllText(GetSavePath() + fileName, json);
+        System.IO.File.WriteAllText(GetSavePath() + defaultFileName, json);
         return true;
     }
 
@@ -55,21 +56,34 @@ public static class SaveLoadSystem
         return path;
     }
 
-    public static void LoadLevel()
+    public static void LoadLevel(string fileName)
     {
         var json = System.IO.File.ReadAllText(GetSavePath() + fileName);
-        Save save = JsonUtility.FromJson<Save>(json);
+        LevelData save = JsonUtility.FromJson<LevelData>(json);
 
-        GridSystem.Instance.DestroyGrid();
+        LevelController.ClearLevel(true);
         var gridInfo = save.gridInfo;
-        GameManager.Instance.ingredients.Clear();
 
 
         GridSystem.Instance.GenerateGrid(gridInfo.gridSize, gridInfo.cellSize, gridInfo.offset);
         for (int i = 0; i < save.gridObjects.Count; i++)
         {
             var target = save.gridObjects[i];
-            GameManager.Instance.CreateIngredients(target.objectIndex, target.index);
+            LevelController.CreateIngredients(target.objectIndex, target.index);
+        }
+
+        GameManager.Instance.ChangeGameState(GameState.Play);
+    }
+
+    public static void LoadLevel(LevelData levelData)
+    {
+        LevelController.ClearLevel(false);
+        var gridInfo = levelData.gridInfo;
+
+        for (int i = 0; i < levelData.gridObjects.Count; i++)
+        {
+            var target = levelData.gridObjects[i];
+            LevelController.CreateIngredients(target.objectIndex, target.index);
         }
 
         GameManager.Instance.ChangeGameState(GameState.Play);
