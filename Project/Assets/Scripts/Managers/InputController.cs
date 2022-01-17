@@ -14,7 +14,7 @@ public enum Directions
 public class InputController : MonoBehaviour
 {
     private Vector2 initialPosition = Vector2.zero;
-    private float minDist = 5;
+    private float minDist = 2;
     private GridObject selectedObject;
     private Camera cam;
 
@@ -38,7 +38,8 @@ public class InputController : MonoBehaviour
     void Update()
     {
         if (lockInputs) return;
-#if UNITY_ANDROID
+
+#if UNITY_ANDROID && !UNITY_EDITOR
         if (Input.touchCount > 0)
         {
             if (initialPosition == Vector2.zero)
@@ -53,6 +54,7 @@ public class InputController : MonoBehaviour
             ReleaseClick();
         }
 #endif
+       
 #if UNITY_EDITOR
         if (Input.GetMouseButton(0))
         {
@@ -68,7 +70,7 @@ public class InputController : MonoBehaviour
             ReleaseClick();
         }
 #endif
-
+        
     }
 
 
@@ -76,13 +78,12 @@ public class InputController : MonoBehaviour
     private void BeginClick(Vector3 initialPos)
     {
         var ray = cam.ScreenPointToRay(initialPos);
-        Debug.DrawRay(ray.origin, ray.direction, Color.red, 30);
+        Debug.DrawLine(ray.origin, ray.direction*30, Color.red, 5);
 
         RaycastHit hit;
-        int layerMask = 1 << 6;
-        if (Physics.Raycast(ray, out hit, 100, layerMask))
+        if (Physics.Raycast(ray, out hit, 300))
         {
-            if (hit.collider != null)
+            if (hit.collider != null && hit.collider.GetComponent<GridObject>() != null)
             {
                 selectedObject = hit.collider.gameObject.GetComponent<GridObject>();
                 initialPosition = initialPos;
@@ -116,7 +117,6 @@ public class InputController : MonoBehaviour
 
             if (currentDirection != Directions.None)
             {
-                GameManager.Instance.ChangeGameState(GameState.Animating);
                 selectedObject.MoveToDirection(currentDirection);
             }
         }

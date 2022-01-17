@@ -52,7 +52,11 @@ public class GridObject : MonoBehaviour
 
     public void MoveToDirection(Directions direction)
     {
-        StartCoroutine(CoMoveToDirection(direction));
+        if(GameManager.CurrentGameState == GameState.Play)
+        {
+            GameManager.Instance.ChangeGameState(GameState.Animating);
+            StartCoroutine(CoMoveToDirection(direction));
+        }
     }
     private IEnumerator CoMoveToDirection(Directions direction)
     {
@@ -90,24 +94,30 @@ public class GridObject : MonoBehaviour
         {
             var targetGridObject = targetGridSlot.gridObject;
             Debug.Log("Direction " + direction, this);
+
             if (this.gridSlot != null)
                 gridSlot.RemoveFromSlot(this);
 
             boxCollider.enabled = false;
 
             targetGridObject.AddNewGameVisual(this.objectDataLoaders);
-            MoveAnimation(targetGridSlot, direction, 1);
-            yield return new WaitForSeconds(1.2f);
 
-            targetGridObject.SetParent(objectDataLoaders);
+            float animationTime = .5f;
+            MoveAnimation(targetGridSlot, direction, animationTime);
+            yield return new WaitForSeconds(animationTime+.1f);
             GameManager.Instance.ChangeGameState(GameState.Play);
+            targetGridObject.SetParent(objectDataLoaders);
             GameManager.Instance.CheckWin(targetGridObject);
-            Destroy(this.gameObject, .2f);
+            Destroy(this.gameObject);
         }
         else if (this.gridSlot == null)
         {
             targetGridSlot.AddToSlot(this);
         }
+
+        if(GameManager.CurrentGameState != GameState.Play && GameManager.CurrentGameState != GameState.Win)
+        GameManager.Instance.ChangeGameState(GameState.Play);
+
     }
 
     private void MoveAnimation(GridSlot targetGridSlot, Directions direction, float duration)

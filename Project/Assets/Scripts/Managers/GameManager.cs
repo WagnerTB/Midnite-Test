@@ -8,7 +8,8 @@ public enum GameState
     None,
     Play,
     Paused,
-    Animating
+    Animating,
+    Win
 }
 
 public class GameManager : MonoBehaviour
@@ -19,7 +20,7 @@ public class GameManager : MonoBehaviour
     public ObjectsDatabase db;
 
     public static GameState CurrentGameState { get { return _currentGameState; } }
-    private static GameState _currentGameState;
+    private static GameState _currentGameState = GameState.Play;
 
     public delegate void GameStateEvent(GameState gameState);
     public static GameStateEvent OnGameStateChanged;
@@ -69,6 +70,7 @@ public class GameManager : MonoBehaviour
     {
         _currentGameState = gameState;
         OnGameStateChanged?.Invoke(_currentGameState);
+       // Debug.Log("[State] " + gameState);
     }
     private void Update()
     {
@@ -78,11 +80,6 @@ public class GameManager : MonoBehaviour
         }
 
     }
-    public void ResetGame()
-    {
-
-    }
-
 
     public void CheckWin(GridObject gridObject)
     {
@@ -123,5 +120,6 @@ public class GameManager : MonoBehaviour
     public void WinGame()
     {
         Debug.Log("<color=green>WIN THE GAME!! </color>");
+        ChangeGameState(GameState.Win);
     }
 }

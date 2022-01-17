@@ -31,12 +31,12 @@ public class LevelController : MonoBehaviour
         Vector2Int index = new Vector2Int(indexX, indexY);
         CreateIngredients(0, index);
 
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.05f);
         //Generate second bread close to the first
         var slotsAvailable = GridSystem.Instance.GetSlotsAvailableAround(index);
         var selectedIndex = Random.Range(0, slotsAvailable.Count - 1);
         CreateIngredients(0, slotsAvailable[selectedIndex].index);
-        yield return new WaitForSeconds(.1f);
+        yield return new WaitForSeconds(.05f);
 
         slotsAvailable = GameManager.Instance.slotsWithObjectNearby;
 
@@ -46,11 +46,12 @@ public class LevelController : MonoBehaviour
             var slot = slotsAvailable[slotIndex];
             var obj = GameManager.Instance.db.GetRandomObjectIndexAtRange(1, 99);
             LevelController.CreateIngredients(obj, slot.index);
-            yield return new WaitForSeconds(.1f);
+            yield return new WaitForSeconds(.05f);
         }
 
         alreadyGenerated = true;
         currentLevelData = SaveLoadSystem.GetLevelData();
+        GameManager.Instance.ChangeGameState(GameState.Play);
     }
 
     public static void CreateIngredients(int objIndex, Vector2Int index)
