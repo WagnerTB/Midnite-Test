@@ -10,7 +10,7 @@ using System.Linq;
 public static class SaveLoadSystem 
 {
     public static string folder = "/Save/";
-    public static string defaultFileName = "layoutSave.json";
+    public const string defaultFileName = "layoutSave.json";
 
     public static LevelData GetLevelData()
     {
@@ -56,7 +56,7 @@ public static class SaveLoadSystem
         return path;
     }
 
-    public static void LoadLevel(string fileName)
+    public static void LoadLevel(string fileName = defaultFileName)
     {
         var json = System.IO.File.ReadAllText(GetSavePath() + fileName);
         LevelData save = JsonUtility.FromJson<LevelData>(json);
