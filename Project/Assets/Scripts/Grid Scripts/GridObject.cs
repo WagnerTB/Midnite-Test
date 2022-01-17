@@ -25,6 +25,10 @@ public class GridObject : MonoBehaviour
         boxCollider.size = Vector3.one * GridSystem.Instance.cellSize;
     }
 
+    /// <summary>
+    /// Add a object loader, that handles the object data visual
+    /// </summary>
+    /// <param name="objectDataLoader"></param>
     public void AddNewObjLoader(ObjectDataLoader objectDataLoader)
     {
         objectDataLoader.SetGridObject(this);
@@ -32,7 +36,11 @@ public class GridObject : MonoBehaviour
         objectDataLoaders.Add(objectDataLoader);
     }
 
-    public void AddNewGameVisual(List<ObjectDataLoader> objectDataLoaders)
+    /// <summary>
+    /// Add a object loader, that handles the object data visual
+    /// </summary>
+    /// <param name="objectDataLoader"></param>
+    public void AddObjectLoader(List<ObjectDataLoader> objectDataLoaders)
     {
         for (int i = objectDataLoaders.Count-1; i >= 0 ; i--)
         {
@@ -41,6 +49,11 @@ public class GridObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Set this object the new parent of all object loaders,
+    /// Used after end moviment
+    /// </summary>
+    /// <param name="objectDataLoaders"></param>
     private void SetParent(List<ObjectDataLoader> objectDataLoaders)
     {
         for (int i = 0; i < objectDataLoaders.Count; i++)
@@ -50,6 +63,11 @@ public class GridObject : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Begin the grid object movement, and at the end transfer
+    /// the object loaders to the target grid object
+    /// </summary>
+    /// <param name="direction"></param>
     public void MoveToDirection(Directions direction)
     {
         if(GameManager.CurrentGameState == GameState.Play)
@@ -100,7 +118,7 @@ public class GridObject : MonoBehaviour
 
             boxCollider.enabled = false;
 
-            targetGridObject.AddNewGameVisual(this.objectDataLoaders);
+            targetGridObject.AddObjectLoader(this.objectDataLoaders);
 
             float animationTime = .5f;
             MoveAnimation(targetGridSlot, direction, animationTime);
@@ -109,6 +127,11 @@ public class GridObject : MonoBehaviour
             targetGridObject.SetParent(objectDataLoaders);
             GameManager.Instance.CheckWin(targetGridObject);
             Destroy(this.gameObject);
+        }
+        else if(targetGridSlot != null && targetGridSlot.gridObject == null)
+        {
+            float animationTime = .5f;
+            MoveAnimation(targetGridSlot, direction, animationTime,false);
         }
         else if (this.gridSlot == null)
         {
@@ -120,7 +143,14 @@ public class GridObject : MonoBehaviour
 
     }
 
-    private void MoveAnimation(GridSlot targetGridSlot, Directions direction, float duration)
+    /// <summary>
+    /// Move the grid object
+    /// </summary>
+    /// <param name="targetGridSlot"></param>
+    /// <param name="direction"></param>
+    /// <param name="duration"></param>
+    /// <param name="sucess"></param>
+    private void MoveAnimation(GridSlot targetGridSlot, Directions direction, float duration,bool sucess = true)
     {
         var targetPos = GridSystem.Instance.GetGridSlotWorldPosition(targetGridSlot);
         var rot = transform.localEulerAngles;
@@ -128,31 +158,68 @@ public class GridObject : MonoBehaviour
 
         if (direction == Directions.Left || direction == Directions.Right)
         {
-            transform.DOMoveX(targetPos.x, duration);
-            transform.DOMoveY(2, duration / 2);
-            transform.DOMoveY(targetPos.y + (targetGridSlot.gridObject.objectDataLoaders.Count * height) + height, duration / 2).SetDelay(duration / 2);
-            if (direction == Directions.Left)
+            if(sucess)
             {
-                transform.DOLocalRotate(rot + new Vector3(0, 0, 180), duration, RotateMode.Fast).SetEase(Ease.OutQuad);
+                transform.DOMoveX(targetPos.x, duration);
+                transform.DOMoveY(2, duration / 2);
+                transform.DOMoveY(targetPos.y + (targetGridSlot.gridObject.objectDataLoaders.Count * height) + height, duration / 2).SetDelay(duration / 2);
+                if (direction == Directions.Left)
+                {
+                    transform.DOLocalRotate(rot + new Vector3(0, 0, 180), duration, RotateMode.Fast).SetEase(Ease.OutQuad);
+                }
+                else
+                {
+                    transform.DOLocalRotate(rot + new Vector3(0, 0, -180), duration, RotateMode.FastBeyond360);
+                }
             }
             else
             {
-                transform.DOLocalRotate(rot + new Vector3(0, 0, -180), duration, RotateMode.FastBeyond360);
+                duration /= 2;
+                transform.DOMoveX(transform.position.x +((direction == Directions.Left)?-3:3)  , duration).SetLoops(2, LoopType.Yoyo);
+                transform.DOMoveY(3, duration / 2).SetLoops(2, LoopType.Yoyo);
+                
+                if (direction == Directions.Left)
+                {
+                    transform.DOLocalRotate(rot + new Vector3(0, 0, 180/2), duration, RotateMode.Fast).SetEase(Ease.OutQuad).SetLoops(2, LoopType.Yoyo);
+                }
+                else
+                {
+                    transform.DOLocalRotate(rot + new Vector3(0, 0, -180/2), duration, RotateMode.FastBeyond360).SetLoops(2, LoopType.Yoyo);
+                }
+
             }
         }
         else
         {
-            transform.DOMoveZ(targetPos.z, duration);
-            transform.DOMoveY(2, duration / 2);
-            transform.DOMoveY(targetPos.y+(targetGridSlot.gridObject.objectDataLoaders.Count * height) + height, duration / 2).SetDelay(duration / 2);
-
-            if (direction == Directions.Up)
+            if(sucess)
             {
-                transform.DOLocalRotate(rot + new Vector3(180, 0, 0), duration, RotateMode.FastBeyond360);
+                transform.DOMoveZ(targetPos.z, duration);
+                transform.DOMoveY(2, duration / 2);
+                transform.DOMoveY(targetPos.y+(targetGridSlot.gridObject.objectDataLoaders.Count * height) + height, duration / 2).SetDelay(duration / 2);
+
+                if (direction == Directions.Up)
+                {
+                    transform.DOLocalRotate(rot + new Vector3(180, 0, 0), duration, RotateMode.FastBeyond360);
+                }
+                else
+                {
+                    transform.DOLocalRotate(rot + new Vector3(-180, 0, 0), duration, RotateMode.FastBeyond360);
+                }
             }
             else
             {
-                transform.DOLocalRotate(rot + new Vector3(-180, 0, 0), duration, RotateMode.FastBeyond360);
+                duration /= 2;
+                transform.DOMoveZ(transform.position.z + ((direction == Directions.Down) ? -3 : 3), duration).SetLoops(2, LoopType.Yoyo);
+                transform.DOMoveY(3, duration / 2).SetLoops(2, LoopType.Yoyo);
+
+                if (direction == Directions.Up)
+                {
+                    transform.DOLocalRotate(rot + new Vector3(180/2, 0, 0), duration, RotateMode.FastBeyond360).SetLoops(2, LoopType.Yoyo);
+                }
+                else
+                {
+                    transform.DOLocalRotate(rot + new Vector3(-180/2, 0, 0), duration, RotateMode.FastBeyond360).SetLoops(2, LoopType.Yoyo);
+                }
             }
         }
 

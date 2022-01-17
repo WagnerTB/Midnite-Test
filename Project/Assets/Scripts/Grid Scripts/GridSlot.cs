@@ -15,6 +15,10 @@ public class GridSlot : MonoBehaviour
         this.index = index;
     }
 
+    /// <summary>
+    /// Add a grid object to slot
+    /// </summary>
+    /// <param name="gridObject"></param>
     public void AddToSlot(GridObject gridObject)
     {
         this.gridObject = gridObject;
@@ -23,6 +27,10 @@ public class GridSlot : MonoBehaviour
         UpdateSlotsAround();
     }
 
+    /// <summary>
+    /// Update slots in the left,right,up and dow to register as available to 
+    /// spawn a igredient there
+    /// </summary>
     private void UpdateSlotsAround()
     {
         var rightSlot = GridSystem.Instance.GetGridSlot(new Vector2Int(index.x + 1, index.y));
@@ -46,6 +54,10 @@ public class GridSlot : MonoBehaviour
 
     }
 
+    /// <summary>
+    /// Remove grid object from slots available to spawn ingredients
+    /// </summary>
+    /// <param name="gridObject"></param>
     public void RemoveFromSlot(GridObject gridObject)
     {
         this.gridObject = null;
@@ -60,7 +72,6 @@ public class GridSlot : MonoBehaviour
 
         if (leftSlot != null)
             OnSlotTurnInvalid?.Invoke(leftSlot);
-
 
         if (upSlot != null)
             OnSlotTurnInvalid?.Invoke(upSlot);

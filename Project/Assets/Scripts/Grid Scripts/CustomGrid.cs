@@ -50,11 +50,6 @@ public class CustomGrid
 
                 slot.transform.SetParent(GridSystem.Instance.slotParents);
                 slot.name = "Slot [" + index + "]";
-
-                // debug
-
-
-
             }
         }
     }

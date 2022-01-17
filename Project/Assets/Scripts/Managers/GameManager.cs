@@ -27,7 +27,15 @@ public class GameManager : MonoBehaviour
 
     public LevelController levelController;
 
+    /// <summary>
+    /// List with all ingredients
+    /// </summary>
     public List<ObjectDataLoader> ingredients = new List<ObjectDataLoader>();
+
+
+    /// <summary>
+    /// List with all slots with a ingredient nearby
+    /// </summary>
     public List<GridSlot> slotsWithObjectNearby = new List<GridSlot>();
 
     private void Awake()

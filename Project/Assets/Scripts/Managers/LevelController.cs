@@ -33,12 +33,12 @@ public class LevelController : MonoBehaviour
 
         yield return new WaitForSeconds(.05f);
         //Generate second bread close to the first
-        var slotsAvailable = GridSystem.Instance.GetSlotsAvailableAround(index);
+        var slotsAvailable = GameManager.Instance.slotsWithObjectNearby;
+        //var slotsAvailable = GridSystem.Instance.GetSlotsAvailableAround(index);
         var selectedIndex = Random.Range(0, slotsAvailable.Count - 1);
         CreateIngredients(0, slotsAvailable[selectedIndex].index);
         yield return new WaitForSeconds(.05f);
 
-        slotsAvailable = GameManager.Instance.slotsWithObjectNearby;
 
         for (int i = 0; i < dificulty; i++)
         {
@@ -54,11 +54,22 @@ public class LevelController : MonoBehaviour
         GameManager.Instance.ChangeGameState(GameState.Play);
     }
 
+    /// <summary>
+    /// Get the object data from database, and spawn at
+    /// the grid slot at the index
+    /// </summary>
+    /// <param name="objIndex"></param>
+    /// <param name="index"></param>
     public static void CreateIngredients(int objIndex, Vector2Int index)
     {
+        if (objIndex < 0 || objIndex > GameManager.Instance.db.objects.Count - 1) return;
+        if ((index.x < 0 || index.x > GridSystem.Instance.gridSize.x - 1) ||
+            (index.y < 0 || index.y > GridSystem.Instance.gridSize.y - 1)) return;
+
         var obj = GameManager.Instance.db.objects[objIndex];
         var gridObj = GameObject.Instantiate(GridSystem.Instance.gridObjectPrefab);
         var slot = GridSystem.Instance.GetGridSlot(index);
+
 
         gridObj.transform.position = GridSystem.Instance.GetGridSlotWorldPosition(slot);
         slot.AddToSlot(gridObj);
@@ -72,12 +83,21 @@ public class LevelController : MonoBehaviour
             GameManager.Instance.ingredients.Add(objLoader);
     }
 
+    /// <summary>
+    /// Clear all the grid slots and clear the ingredients list
+    /// Can destroy the entire grid for loading a level with a 
+    /// grid with different specs
+    /// </summary>
+    /// <param name="destroyGrid"></param>
     public static void ClearLevel(bool destroyGrid = false)
     {
         GridSystem.Instance.DestroyGrid(destroyGrid);
         GameManager.Instance.ingredients.Clear();
     }
 
+    /// <summary>
+    /// Just reload the current level data
+    /// </summary>
     public void ResetLevel()
     {
         SaveLoadSystem.LoadLevel(currentLevelData);
